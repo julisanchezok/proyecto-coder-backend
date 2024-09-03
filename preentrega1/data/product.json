@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "title": "Producto actualizado",
+    "description": "Descripción del producto de ejemplo.",
+    "code": "ABC123",
+    "price": 29.99,
+    "status": true,
+    "stock": 10043,
+    "category": "Electrónica",
+    "thumbnails": [
+      "http://example.com/image1.jpg",
+      "http://example.com/image2.jpg"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Producto Ejemplo 2",
+    "description": "Descripción del producto de ejemplo.",
+    "code": "ABC123",
+    "price": 29.99,
+    "status": true,
+    "stock": 10043,
+    "category": "Electrónica",
+    "thumbnails": null
+  }
+]
