@@ -1,27 +1,48 @@
 [
   {
     "id": 1,
-    "title": "Producto actualizado",
+    "title": "producto prueba",
     "description": "Descripción del producto de ejemplo.",
     "code": "ABC123",
     "price": 29.99,
     "status": true,
     "stock": 10043,
     "category": "Electrónica",
-    "thumbnails": [
-      "http://example.com/image1.jpg",
-      "http://example.com/image2.jpg"
-    ]
+    "thumbnails": null
   },
   {
-    "id": 2,
-    "title": "Producto Ejemplo 2",
-    "description": "Descripción del producto de ejemplo.",
-    "code": "ABC123",
-    "price": 29.99,
+    "title": "producto real time",
+    "description": "producto",
+    "price": "5"
+  },
+  {
+    "title": "producto ",
+    "description": "producto",
+    "price": "444"
+  },
+  {
+    "title": "prueba",
+    "description": "producto",
+    "price": "2332"
+  },
+  {
+    "title": "32323",
+    "description": "33",
+    "price": "44"
+  },
+  {
+    "title": "prueba",
+    "description": "producto",
+    "price": "44"
+  },
+  {
+    "title": "cafe",
+    "description": "cafer",
+    "code": "33884",
+    "price": 9000,
     "status": true,
-    "stock": 10043,
-    "category": "Electrónica",
+    "stock": 2,
+    "category": "cafe",
     "thumbnails": null
   }
 ]
