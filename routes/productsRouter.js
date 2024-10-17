@@ -1,98 +1,80 @@
 import Router from 'express';
-import { getProducts, saveProducts } from '../services/productsService.js';
+import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from '../services/productsService.js';
+import { productModel } from '../src/models/product.model.js';
 
-const productsRouterFactory = (io) => {
-  const router = Router();
+const productsRouter = (io) => {
+    const router = Router();
 
+    router.get('/', async function(req, res) {
+        try {
+            const products = await getProducts(req);
+            res.send({ result: "success", payload: products });
+        } catch (error) {
+            console.log('Cannot access to products: ' + error);
+            res.status(500).send({ result: "error", message: "Cannot retrieve products" });
+        }
+    });
 
-  router.get('/', function(req, res) {
-      const products = getProducts();
-      res.send(products);
-  });
+    router.get('/:pid', async function(req, res) {
+        try {
+            const product = await getProductById(req.params.pid);
+            if (!product) {
+                return res.status(404).send({ message: 'Product not found' });
+            }
+            res.send(product);
+        } catch (error) {
+            res.status(500).send({ message: 'Error retrieving product' });
+        }
+    });
 
-  router.get('/:pid', function(req, res) {
-      const products = getProducts();
-      const product = products.find(p => p.id == req.params.pid);
-      if (!product) {
-          return res.status(404).send({ message: 'Product not found' });
-      }
-      res.send(product);
-  });
+    router.post('/', async function(req, res) {
+        try {
+            const { title, description, code, price, status, stock, category, thumbnails } = req.body;
+            if (!title || !description || !code || !price || !status || (!stock && stock != 0) || !category) {
+                return res.status(400).send({ message: 'All fields are required and must not be null or empty' });
+            }
 
+            const product = await createProduct({
+                title, description, code, price, status, stock, category, thumbnails: thumbnails || []
+            });
 
-  router.post('/', function(req, res) {
-      const products = getProducts();
-      const size = products.length + 1; 
-      const { title, description, code, price, status, stock, category, thumbnails } = req.body;
-
-      if (!title || !description || !code || !price || !status || !stock || !category) {
-          return res.status(400).send({ message: 'All fields are required and must not be null or empty' });
-      }
-
-      const product = {
-          id: size,
-          title,
-          description,
-          code,
-          price,
-          status,
-          stock,
-          category,
-          thumbnails: thumbnails || null 
-      };
-
-
-      products.push(product);
-      saveProducts(products);
-
-      io.emit('newProduct', product);  
-
-      return res.send({ status: 'Product created', product });
-  });
+            io.emit('newProduct', product);
+            res.send({ status: 'success', payload: product });
+        } catch (error) {
+            res.status(500).send({ message: 'Error creating product' });
+        }
+    });
 
 
-  router.put('/:pid', function(req, res) {
-      const products = getProducts();
-      const productFinded = products.find(p => p.id == req.params.pid);
-      if (!productFinded) {
-          return res.status(404).send({ message: 'Product not found' });
-      }
-      const productIndex = products.findIndex(p => p.id == req.params.pid);
-      const product = {
-          id: productFinded.id, 
-          title: req.body.title || productFinded.title,
-          description: req.body.description || productFinded.description,
-          code: req.body.code || productFinded.code,
-          price: req.body.price || productFinded.price,
-          status: req.body.status || productFinded.status,
-          stock: req.body.stock || productFinded.stock,
-          category: req.body.category || productFinded.category,
-          thumbnails: req.body.thumbnails || productFinded.thumbnails || null
-      };
+    router.put('/:pid', async function(req, res) {
+        try {
+            const updatedProduct = await updateProduct(req.params.pid, req.body);
+            if (!updatedProduct) {
+                return res.status(404).send({ message: 'Product not found' });
+            }
 
-      products[productIndex] = product;
-      saveProducts(products);
+            io.emit('updateProduct', updatedProduct);
+            res.send({ status: 'Product updated', payload: updatedProduct });
+        } catch (error) {
+            res.status(500).send({ message: 'Error updating product' });
+        }
+    });
 
-      return res.send({ status: 'Product updated' });
-  });
+    router.delete('/:pid', async function(req, res) {
+        try {
+            const deletedProduct = await deleteProduct(req.params.pid);
+            if (!deletedProduct) {
+                return res.status(404).send({ message: 'Product not found' });
+            }
 
+            io.emit('deleteProduct', req.params.pid);
+            res.send({ status: 'Product has been deleted' });
+        } catch (error) {
+            res.status(500).send({ message: 'Error deleting product' });
+        }
+    });
 
-  router.delete('/:pid', function(req, res) {
-      const products = getProducts();
-      const productFinded = products.find(p => p.id == req.params.pid);
-      if (!productFinded) {
-          return res.status(404).send({ message: 'Product not found' });
-      }
-      const productIndex = products.findIndex(p => p.id == req.params.pid);
-      products.splice(productIndex, 1);
-      saveProducts(products);
-                         
-      io.emit('deleteProduct', req.params.pid);   
-
-      return res.send({ status: 'Product has been deleted' });
-  });
-
-  return router;
+    return router;
 };
 
-export default productsRouterFactory;
+export default productsRouter;

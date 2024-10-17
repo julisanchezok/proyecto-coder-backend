@@ -1,0 +1,17 @@
+<div class="product-container">
+    <div class="product-image">
+        <img src="{{product.thumbnails.[0]}}" alt="{{product.title}}">
+    </div>
+    <div class="product-details">
+        <h2>{{product.title}}</h2>
+        <div class="category">{{product.category}}</div>
+        <p class="description">{{product.description}}</p>
+        <div class="price">${{product.price}}</div>
+        <form id="add-to-cart-form" action="/api/cart/add/{{product._id}}" method="POST">
+              <input type="hidden" name="productId" value="{{product._id}}">
+                <input type="number" name="productId" value="1">
+
+              <button type="submit">Agregar al Carrito</button>
+        </form>
+    </div>
+</div>
